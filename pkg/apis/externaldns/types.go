@@ -112,6 +112,7 @@ type Config struct {
 	RFC2136TSIGSecret           string
 	RFC2136TSIGSecretAlg        string
 	RFC2136TAXFR                bool
+	HostsFile                   string
 }
 
 var defaultConfig = &Config{
@@ -185,6 +186,7 @@ var defaultConfig = &Config{
 	RFC2136TSIGSecret:           "",
 	RFC2136TSIGSecretAlg:        "",
 	RFC2136TAXFR:                true,
+	HostsFile:                   "/etc/avahi/hosts",
 }
 
 // NewConfig returns new Config object
@@ -247,7 +249,7 @@ func (cfg *Config) ParseFlags(args []string) error {
 	app.Flag("service-type-filter", "The service types to take care about (default: all, expected: ClusterIP, NodePort, LoadBalancer or ExternalName)").StringsVar(&cfg.ServiceTypeFilter)
 
 	// Flags related to providers
-	app.Flag("provider", "The DNS provider where the DNS records will be created (required, options: aws, aws-sd, google, azure, cloudflare, rcodezero, digitalocean, dnsimple, infoblox, dyn, designate, coredns, skydns, inmemory, pdns, oci, exoscale, linode, rfc2136)").Required().PlaceHolder("provider").EnumVar(&cfg.Provider, "aws", "aws-sd", "google", "azure", "alibabacloud", "cloudflare", "rcodezero", "digitalocean", "dnsimple", "infoblox", "dyn", "designate", "coredns", "skydns", "inmemory", "pdns", "oci", "exoscale", "linode", "rfc2136")
+	app.Flag("provider", "The DNS provider where the DNS records will be created (required, options: aws, aws-sd, google, azure, cloudflare, rcodezero, digitalocean, dnsimple, infoblox, dyn, designate, coredns, skydns, inmemory, pdns, oci, exoscale, linode, rfc2136, hosts)").Required().PlaceHolder("provider").EnumVar(&cfg.Provider, "aws", "aws-sd", "google", "azure", "alibabacloud", "cloudflare", "rcodezero", "digitalocean", "dnsimple", "infoblox", "dyn", "designate", "coredns", "skydns", "inmemory", "pdns", "oci", "exoscale", "linode", "rfc2136", "hosts")
 	app.Flag("domain-filter", "Limit possible target zones by a domain suffix; specify multiple times for multiple domains (optional)").Default("").StringsVar(&cfg.DomainFilter)
 	app.Flag("zone-id-filter", "Filter target zones by hosted zone id; specify multiple times for multiple zones (optional)").Default("").StringsVar(&cfg.ZoneIDFilter)
 	app.Flag("google-project", "When using the Google provider, current project is auto-detected, when running on GCP. Specify other project with this. Must be specified when running outside GCP.").Default(defaultConfig.GoogleProject).StringVar(&cfg.GoogleProject)
@@ -282,6 +284,7 @@ func (cfg *Config) ParseFlags(args []string) error {
 	app.Flag("pdns-server", "When using the PowerDNS/PDNS provider, specify the URL to the pdns server (required when --provider=pdns)").Default(defaultConfig.PDNSServer).StringVar(&cfg.PDNSServer)
 	app.Flag("pdns-api-key", "When using the PowerDNS/PDNS provider, specify the API key to use to authorize requests (required when --provider=pdns)").Default(defaultConfig.PDNSAPIKey).StringVar(&cfg.PDNSAPIKey)
 	app.Flag("pdns-tls-enabled", "When using the PowerDNS/PDNS provider, specify whether to use TLS (default: false, requires --tls-ca, optionally specify --tls-client-cert and --tls-client-cert-key)").Default(strconv.FormatBool(defaultConfig.PDNSTLSEnabled)).BoolVar(&cfg.PDNSTLSEnabled)
+	app.Flag("hosts-file", "When using hosts provider, specify the hosts filename where the domain names are written (default: /etc/avahi/hosts").Default(defaultConfig.HostsFile).StringVar(&cfg.HostsFile)
 
 	// Flags related to TLS communication
 	app.Flag("tls-ca", "When using TLS communication, the path to the certificate authority to verify server communications (optionally specify --tls-client-cert for two-way TLS)").Default(defaultConfig.TLSCA).StringVar(&cfg.TLSCA)
