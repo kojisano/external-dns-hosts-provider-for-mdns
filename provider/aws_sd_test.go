@@ -49,7 +49,7 @@ type AWSSDClientStub struct {
 func (s *AWSSDClientStub) CreateService(input *sd.CreateServiceInput) (*sd.CreateServiceOutput, error) {
 
 	srv := &sd.Service{
-		Id:               aws.String(string(rand.Intn(10000))),
+		Id:               aws.String(string(rune(rand.Intn(10000)))),
 		DnsConfig:        input.DnsConfig,
 		Name:             input.Name,
 		Description:      input.Description,
